@@ -1,0 +1,17 @@
+<div class="loading-overlay" *ngIf="(loading$ | async)?.isLoading">
+  <div class="loading-content">
+    <div
+      class="spinner-border text-primary"
+      role="status"
+      style="width: 3rem; height: 3rem"
+    >
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <div class="loading-text mt-3" *ngIf="(loading$ | async)?.message">
+      {{ (loading$ | async)?.message }}
+    </div>
+    <div class="loading-text mt-3" *ngIf="!(loading$ | async)?.message">
+      Cargando...
+    </div>
+  </div>
+</div>

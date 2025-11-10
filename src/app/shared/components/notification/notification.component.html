@@ -1,0 +1,69 @@
+<div class="notification-container">
+  <div
+    *ngFor="let notification of notifications$ | async; trackBy: trackByFn"
+    class="alert notification-alert"
+    [ngClass]="getAlertClass(notification.type)"
+    role="alert"
+  >
+    <div class="d-flex align-items-start">
+      <i [class]="getIconClass(notification.type) + ' me-3 mt-1'"></i>
+      <div class="flex-grow-1">
+        <h6 class="alert-heading mb-1">{{ notification.title }}</h6>
+        <div class="notification-container">
+          <div
+            *ngFor="
+              let notification of notifications$ | async;
+              trackBy: trackByFn
+            "
+            class="alert {{
+              getAlertClass(notification.type)
+            }} alert-dismissible notification-item"
+            role="alert"
+          >
+            <div class="d-flex align-items-start">
+              <!-- Icon -->
+              <div class="notification-icon me-3">
+                <i [class]="getIconClass(notification.type)"></i>
+              </div>
+
+              <!-- Content -->
+              <div class="flex-grow-1">
+                <div class="notification-title fw-bold">
+                  {{ notification.title }}
+                </div>
+                <div class="notification-message">
+                  {{ notification.message }}
+                </div>
+              </div>
+
+              <!-- Close button -->
+              <button
+                type="button"
+                class="btn-close"
+                (click)="closeNotification(notification.id)"
+                aria-label="Cerrar"
+              ></button>
+            </div>
+
+            <!-- Auto-close progress bar -->
+            <div
+              *ngIf="
+                notification.autoClose &&
+                notification.duration &&
+                notification.duration > 0
+              "
+              class="notification-progress"
+              [style.animation-duration.ms]="notification.duration"
+            ></div>
+          </div>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="btn-close ms-3"
+        aria-label="Cerrar"
+        (click)="closeNotification(notification.id)"
+      ></button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,382 @@
+<div class="admin-dashboard-container">
+  <!-- Header del Dashboard -->
+  <div class="dashboard-header">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-8">
+        <h1 class="dashboard-title">
+          <i class="fas fa-shield-alt me-2"></i>Panel de Administración
+        </h1>
+        <p class="dashboard-subtitle mb-0" *ngIf="currentUser$ | async as user">
+          Bienvenido, {{ user.nombre }}
+        </p>
+      </div>
+      <div class="col-12 col-md-4 text-md-end">
+        <div class="dashboard-date">
+          <i class="fas fa-calendar-alt me-2"></i>
+          {{ getCurrentDate() | date : "fullDate" : "es-CO" }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="text-center py-5" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando información del sistema...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content" *ngIf="!isLoading">
+    <!-- Estadísticas Generales -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h5 class="section-title">
+          <i class="fas fa-chart-line me-2"></i>Estadísticas del Sistema
+        </h5>
+      </div>
+      <div class="col-6 col-lg-3 mb-3" *ngFor="let stat of dashboardStats">
+        <div class="stats-card" [class]="'stats-card-' + stat.color">
+          <div class="stats-icon">
+            <i [class]="stat.icon"></i>
+          </div>
+          <div class="stats-content">
+            <div class="stats-value">{{ stat.value }}</div>
+            <div class="stats-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen Detallado -->
+    <div class="row mb-4">
+      <div class="col-12 col-md-6 col-lg-3 mb-3">
+        <div class="summary-card">
+          <div class="summary-header">
+            <i class="fas fa-users text-primary"></i>
+            <h6>Usuarios por Tipo</h6>
+          </div>
+          <div class="summary-content">
+            <div class="summary-item">
+              <span class="summary-label">Contribuyentes:</span>
+              <span class="summary-value text-success">{{
+                sistemStats.totalContribuyentes
+              }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Contadores:</span>
+              <span class="summary-value text-primary">{{
+                sistemStats.totalContadores
+              }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Total:</span>
+              <span class="summary-value text-dark fw-bold">{{
+                sistemStats.totalUsuarios
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3 mb-3">
+        <div class="summary-card">
+          <div class="summary-header">
+            <i class="fas fa-calendar-check text-success"></i>
+            <h6>Actividad de Citas</h6>
+          </div>
+          <div class="summary-content">
+            <div class="summary-item">
+              <span class="summary-label">Hoy:</span>
+              <span class="summary-value text-success">{{
+                sistemStats.citasHoy
+              }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Total:</span>
+              <span class="summary-value text-primary">{{
+                sistemStats.totalCitas
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3 mb-3">
+        <div class="summary-card">
+          <div class="summary-header">
+            <i class="fas fa-file-upload text-info"></i>
+            <h6>Documentos</h6>
+          </div>
+          <div class="summary-content">
+            <div class="summary-item">
+              <span class="summary-label">Subidos:</span>
+              <span class="summary-value text-info">{{
+                sistemStats.documentosSubidos
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3 mb-3">
+        <div class="summary-card">
+          <div class="summary-header">
+            <i class="fas fa-user-check text-warning"></i>
+            <h6>Usuarios Activos</h6>
+          </div>
+          <div class="summary-content">
+            <div class="summary-item">
+              <span class="summary-label">Activos:</span>
+              <span class="summary-value text-warning">{{
+                sistemStats.usuariosActivos
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="row">
+      <!-- Usuarios Recientes -->
+      <div class="col-12 col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-user-plus me-2 text-success"></i>
+              Usuarios Recientes
+            </h5>
+          </div>
+          <div class="card-body">
+            <div
+              class="list-group list-group-flush"
+              *ngIf="usuariosRecientes.length > 0; else noUsuarios"
+            >
+              <div
+                class="list-group-item"
+                *ngFor="let usuario of usuariosRecientes"
+              >
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">{{ usuario.nombre }}</h6>
+                    <p class="mb-1 text-muted small">{{ usuario.email }}</p>
+                    <p class="mb-1" *ngIf="usuario.telefono">
+                      <i class="fas fa-phone me-1"></i>
+                      <small class="text-muted">{{ usuario.telefono }}</small>
+                    </p>
+                    <small class="text-muted">
+                      <i class="fas fa-calendar me-1"></i>
+                      {{ formatearFecha(usuario.fechaCreacion!) }}
+                    </small>
+                  </div>
+                  <div class="text-end">
+                    <span [class]="getRolClass(usuario.tipo)">
+                      {{ usuario.tipo | titlecase }}
+                    </span>
+                    <div class="mt-2" *ngIf="usuario.tipo !== 'administrador'">
+                      <button
+                        class="btn btn-sm me-1"
+                        [class.btn-outline-success]="!usuario.activo"
+                        [class.btn-outline-danger]="usuario.activo"
+                        (click)="
+                          usuario.activo
+                            ? desactivarUsuario(usuario.id)
+                            : activarUsuario(usuario.id)
+                        "
+                      >
+                        <i
+                          [class]="
+                            usuario.activo
+                              ? 'fas fa-user-times'
+                              : 'fas fa-user-check'
+                          "
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noUsuarios>
+              <div class="text-center py-4">
+                <i class="fas fa-users text-muted fa-3x mb-3"></i>
+                <p class="text-muted">No hay usuarios recientes</p>
+              </div>
+            </ng-template>
+          </div>
+          <div class="card-footer text-center">
+            <a
+              routerLink="/admin/usuarios"
+              class="btn btn-outline-primary btn-sm"
+            >
+              Ver todos los usuarios
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Citas Recientes -->
+      <div class="col-12 col-lg-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-calendar-alt me-2 text-primary"></i>
+              Citas Recientes
+            </h5>
+          </div>
+          <div class="card-body">
+            <div
+              class="list-group list-group-flush"
+              *ngIf="citasRecientes.length > 0; else noCitas"
+            >
+              <div class="list-group-item" *ngFor="let cita of citasRecientes">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">
+                      {{ cita.contribuyente?.nombre }} →
+                      {{ cita.contador?.nombre }}
+                    </h6>
+                    <p class="mb-1 text-muted small">
+                      <i class="fas fa-calendar me-1"></i>
+                      {{ formatearFechaCompleta(cita.fecha) }}
+                    </p>
+                    <p class="mb-1 text-muted small">
+                      <i class="fas fa-clock me-1"></i>
+                      {{ cita.hora }}
+                    </p>
+                    <small class="text-muted">{{
+                      cita.tipoConsulta || "Consulta general"
+                    }}</small>
+                  </div>
+                  <div class="text-end">
+                    <span [class]="getEstadoCitaClass(cita.estado)">
+                      {{ cita.estado | titlecase }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noCitas>
+              <div class="text-center py-4">
+                <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
+                <p class="text-muted">No hay citas recientes</p>
+              </div>
+            </ng-template>
+          </div>
+          <div class="card-footer text-center">
+            <a routerLink="/admin/citas" class="btn btn-outline-primary btn-sm">
+              Ver todas las citas
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documentos Recientes y Acciones Rápidas -->
+    <div class="row">
+      <!-- Documentos Recientes -->
+      <div class="col-12 col-lg-8 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-file-alt me-2 text-info"></i>
+              Documentos Recientes
+            </h5>
+          </div>
+          <div class="card-body">
+            <div
+              class="table-responsive"
+              *ngIf="documentosRecientes.length > 0; else noDocumentos"
+            >
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Contribuyente</th>
+                    <th>Fecha</th>
+                    <th>Tamaño</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let documento of documentosRecientes">
+                    <td>
+                      <i class="fas fa-file me-1"></i>
+                      {{ documento.nombre }}
+                    </td>
+                    <td>
+                      <span [class]="getTipoDocumentoClass(documento.tipo)">
+                        {{ documento.tipo | titlecase }}
+                      </span>
+                    </td>
+                    <td>{{ documento.contribuyente?.nombre }}</td>
+                    <td>
+                      <small>{{ formatearFecha(documento.fechaCarga) }}</small>
+                    </td>
+                    <td>
+                      <small>{{
+                        formatearTamano(documento["tamaño"] || 0)
+                      }}</small>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ng-template #noDocumentos>
+              <div class="text-center py-4">
+                <i class="fas fa-file-times text-muted fa-3x mb-3"></i>
+                <p class="text-muted">No hay documentos recientes</p>
+              </div>
+            </ng-template>
+          </div>
+          <div class="card-footer text-center">
+            <a
+              routerLink="/admin/documentos"
+              class="btn btn-outline-primary btn-sm"
+            >
+              Ver todos los documentos
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones Rápidas -->
+      <div class="col-12 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="fas fa-bolt me-2 text-warning"></i>
+              Acciones Rápidas
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-3">
+              <a routerLink="/admin/usuarios" class="action-button">
+                <i class="fas fa-users-cog me-2"></i>
+                Gestionar Usuarios
+              </a>
+              <a routerLink="/admin/reportes" class="action-button">
+                <i class="fas fa-chart-bar me-2"></i>
+                Ver Reportes
+              </a>
+              <a routerLink="/admin/configuracion" class="action-button">
+                <i class="fas fa-cog me-2"></i>
+                Configuración
+              </a>
+              <a routerLink="/admin/backup" class="action-button">
+                <i class="fas fa-database me-2"></i>
+                Respaldo de Datos
+              </a>
+              <a routerLink="/admin/logs" class="action-button">
+                <i class="fas fa-file-alt me-2"></i>
+                Logs del Sistema
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

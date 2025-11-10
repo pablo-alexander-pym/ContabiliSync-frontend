@@ -1,0 +1,131 @@
+.register-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 1rem 0;
+}
+
+.card-custom {
+  border: none;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.text-primary-custom {
+  color: #667eea !important;
+}
+
+.btn-primary-custom {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b63b8 100%);
+}
+
+.btn-primary-custom:disabled {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #667eea;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+}
+
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.form-check-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+}
+
+.contador-fields {
+  background-color: rgba(102, 126, 234, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  margin-bottom: 1rem;
+}
+
+.invalid-feedback {
+  display: block;
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Animation for form appearance */
+.card-custom {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive improvements */
+@media (max-width: 576px) {
+  .register-container {
+    padding: 0.5rem;
+  }
+
+  .card-body {
+    padding: 2rem 1.5rem !important;
+  }
+
+  .input-group-text {
+    padding: 0.375rem 0.5rem;
+  }
+}
+
+/* Loading state */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Enhanced focus states */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  outline: none;
+}
+
+/* Success state for validation */
+.form-control.is-valid,
+.form-select.is-valid {
+  border-color: #28a745;
+  background-image: none;
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+}

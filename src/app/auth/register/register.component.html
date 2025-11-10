@@ -1,0 +1,322 @@
+<div class="register-container">
+  <div class="container-fluid">
+    <div class="row min-vh-100 align-items-center justify-content-center">
+      <div class="col-11 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+        <div class="card card-custom shadow-lg">
+          <div class="card-body p-4 p-md-5">
+            <!-- Header -->
+            <div class="text-center mb-4">
+              <div class="mb-3">
+                <i
+                  class="fas fa-calculator text-primary-custom"
+                  style="font-size: 3rem"
+                ></i>
+              </div>
+              <h2 class="h3 mb-2 text-primary-custom fw-bold">ContabiliSync</h2>
+              <p class="text-muted">Crea tu cuenta</p>
+            </div>
+
+            <!-- Register Form -->
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <!-- Nombre -->
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre Completo</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="nombre"
+                    formControlName="nombre"
+                    placeholder="Tu nombre completo"
+                    [class.is-invalid]="isFieldInvalid('nombre')"
+                  />
+                </div>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('nombre')">
+                  {{ getFieldError("nombre") }}
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-envelope"></i>
+                  </span>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    formControlName="email"
+                    placeholder="tu@email.com"
+                    [class.is-invalid]="isFieldInvalid('email')"
+                  />
+                </div>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('email')">
+                  {{ getFieldError("email") }}
+                </div>
+              </div>
+
+              <!-- Tipo de Usuario -->
+              <div class="mb-3">
+                <label for="tipo" class="form-label">Tipo de Usuario</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user-tag"></i>
+                  </span>
+                  <select
+                    class="form-select"
+                    id="tipo"
+                    formControlName="tipo"
+                    [class.is-invalid]="isFieldInvalid('tipo')"
+                  >
+                    <option value="" disabled>Selecciona tu rol</option>
+                    <option
+                      *ngFor="let tipoOption of tiposUsuario"
+                      [value]="tipoOption.value"
+                    >
+                      {{ tipoOption.label }}
+                    </option>
+                  </select>
+                </div>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('tipo')">
+                  {{ getFieldError("tipo") }}
+                </div>
+              </div>
+
+              <!-- Teléfono -->
+              <div class="mb-3">
+                <label for="telefono" class="form-label"
+                  >Teléfono (Opcional)</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-phone"></i>
+                  </span>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="telefono"
+                    formControlName="telefono"
+                    placeholder="+57 300 123 4567"
+                    [class.is-invalid]="isFieldInvalid('telefono')"
+                  />
+                </div>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="isFieldInvalid('telefono')"
+                >
+                  {{ getFieldError("telefono") }}
+                </div>
+              </div>
+
+              <!-- Campos específicos para Contador -->
+              <div *ngIf="isContador()" class="contador-fields">
+                <!-- Especialidad -->
+                <div class="mb-3">
+                  <label for="especialidad" class="form-label"
+                    >Especialidad *</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-graduation-cap"></i>
+                    </span>
+                    <select
+                      class="form-select"
+                      id="especialidad"
+                      formControlName="especialidad"
+                      [class.is-invalid]="isFieldInvalid('especialidad')"
+                    >
+                      <option value="" disabled>
+                        Selecciona tu especialidad
+                      </option>
+                      <option value="Contabilidad General">
+                        Contabilidad General
+                      </option>
+                      <option value="Auditoría">Auditoría</option>
+                      <option value="Impuestos y Tributación">
+                        Impuestos y Tributación
+                      </option>
+                      <option value="Contabilidad Financiera">
+                        Contabilidad Financiera
+                      </option>
+                      <option value="Contabilidad de Costos">
+                        Contabilidad de Costos
+                      </option>
+                      <option value="Consultoría Empresarial">
+                        Consultoría Empresarial
+                      </option>
+                    </select>
+                  </div>
+                  <div
+                    class="invalid-feedback"
+                    *ngIf="isFieldInvalid('especialidad')"
+                  >
+                    {{ getFieldError("especialidad") }}
+                  </div>
+                </div>
+
+                <!-- Número de Licencia -->
+                <div class="mb-3">
+                  <label for="numeroLicencia" class="form-label"
+                    >Número de Licencia Profesional *</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-id-card"></i>
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="numeroLicencia"
+                      formControlName="numeroLicencia"
+                      placeholder="Ej: CP-12345"
+                      [class.is-invalid]="isFieldInvalid('numeroLicencia')"
+                    />
+                  </div>
+                  <div
+                    class="invalid-feedback"
+                    *ngIf="isFieldInvalid('numeroLicencia')"
+                  >
+                    {{ getFieldError("numeroLicencia") }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contraseña -->
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input
+                    [type]="showPassword ? 'text' : 'password'"
+                    class="form-control"
+                    id="password"
+                    formControlName="password"
+                    placeholder="Mínimo 6 caracteres"
+                    [class.is-invalid]="isFieldInvalid('password')"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="togglePasswordVisibility()"
+                  >
+                    <i
+                      [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                    ></i>
+                  </button>
+                </div>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="isFieldInvalid('password')"
+                >
+                  {{ getFieldError("password") }}
+                </div>
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label"
+                  >Confirmar Contraseña</label
+                >
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input
+                    [type]="showConfirmPassword ? 'text' : 'password'"
+                    class="form-control"
+                    id="confirmPassword"
+                    formControlName="confirmPassword"
+                    placeholder="Repite tu contraseña"
+                    [class.is-invalid]="isFieldInvalid('confirmPassword')"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="toggleConfirmPasswordVisibility()"
+                  >
+                    <i
+                      [class]="
+                        showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                      "
+                    ></i>
+                  </button>
+                </div>
+                <div
+                  class="invalid-feedback"
+                  *ngIf="isFieldInvalid('confirmPassword')"
+                >
+                  {{ getFieldError("confirmPassword") }}
+                </div>
+              </div>
+
+              <!-- Términos y Condiciones -->
+              <div class="mb-4">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="terminosAceptados"
+                    formControlName="terminosAceptados"
+                    [class.is-invalid]="isFieldInvalid('terminosAceptados')"
+                  />
+                  <label class="form-check-label" for="terminosAceptados">
+                    Acepto los
+                    <a href="#" class="text-primary-custom text-decoration-none"
+                      >términos y condiciones</a
+                    >
+                    y la
+                    <a href="#" class="text-primary-custom text-decoration-none"
+                      >política de privacidad</a
+                    >
+                  </label>
+                  <div
+                    class="invalid-feedback"
+                    *ngIf="isFieldInvalid('terminosAceptados')"
+                  >
+                    {{ getFieldError("terminosAceptados") }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="d-grid gap-2 mb-3">
+                <button
+                  type="submit"
+                  class="btn btn-primary-custom btn-lg"
+                  [disabled]="isLoading || registerForm.invalid"
+                >
+                  <span
+                    *ngIf="isLoading"
+                    class="spinner-border spinner-border-sm me-2"
+                  ></span>
+                  <i *ngIf="!isLoading" class="fas fa-user-plus me-2"></i>
+                  {{ isLoading ? "Creando cuenta..." : "Crear Cuenta" }}
+                </button>
+              </div>
+
+              <!-- Login Link -->
+              <div class="text-center">
+                <p class="mb-0 text-muted">
+                  ¿Ya tienes una cuenta?
+                  <a
+                    routerLink="/login"
+                    class="text-primary-custom text-decoration-none fw-semibold"
+                  >
+                    Inicia sesión aquí
+                  </a>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

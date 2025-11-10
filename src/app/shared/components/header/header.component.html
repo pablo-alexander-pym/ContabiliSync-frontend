@@ -1,0 +1,149 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom sticky-top">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a
+      class="navbar-brand fw-bold"
+      [routerLink]="
+        (currentUser$ | async)
+          ? getDashboardRoute(currentUser$ | async)
+          : '/login'
+      "
+    >
+      <i class="fas fa-calculator me-2"></i>
+      ContabiliSync
+    </a>
+
+    <!-- Mobile toggle button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Menu -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <!-- Menu items based on user type -->
+        <ng-container *ngIf="currentUser$ | async as user">
+          <!-- Contribuyente Menu -->
+          <ng-container *ngIf="user.tipo === TipoUsuario.CONTRIBUYENTE">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contribuyente/dashboard">
+                <i class="fas fa-tachometer-alt me-1"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contribuyente/documentos">
+                <i class="fas fa-folder me-1"></i>
+                Documentos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contribuyente/citas">
+                <i class="fas fa-calendar me-1"></i>
+                Citas
+              </a>
+            </li>
+          </ng-container>
+
+          <!-- Contador Menu -->
+          <ng-container *ngIf="user.tipo === TipoUsuario.CONTADOR">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contador/dashboard">
+                <i class="fas fa-tachometer-alt me-1"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contador/agenda">
+                <i class="fas fa-calendar-alt me-1"></i>
+                Agenda
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contador/clientes">
+                <i class="fas fa-users me-1"></i>
+                Clientes
+              </a>
+            </li>
+          </ng-container>
+
+          <!-- Administrador Menu -->
+          <ng-container *ngIf="user.tipo === TipoUsuario.ADMINISTRADOR">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/dashboard">
+                <i class="fas fa-tachometer-alt me-1"></i>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/usuarios">
+                <i class="fas fa-users-cog me-1"></i>
+                Usuarios
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/admin/reportes">
+                <i class="fas fa-chart-bar me-1"></i>
+                Reportes
+              </a>
+            </li>
+          </ng-container>
+        </ng-container>
+      </ul>
+
+      <!-- User Menu -->
+      <ul class="navbar-nav">
+        <ng-container *ngIf="isAuthenticated$ | async; else loginButton">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle d-flex align-items-center"
+              href="#"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <div
+                class="bg-white rounded-circle me-2 d-flex align-items-center justify-content-center"
+                style="width: 32px; height: 32px"
+              >
+                <i class="fas fa-user text-primary"></i>
+              </div>
+              <span *ngIf="currentUser$ | async as user">{{
+                user.nombre
+              }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" (click)="navigateToProfile()">
+                  <i class="fas fa-user-edit me-2"></i>
+                  Mi Perfil
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item text-danger" (click)="logout()">
+                  <i class="fas fa-sign-out-alt me-2"></i>
+                  Cerrar Sesión
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ng-container>
+
+        <ng-template #loginButton>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login">
+              <i class="fas fa-sign-in-alt me-1"></i>
+              Iniciar Sesión
+            </a>
+          </li>
+        </ng-template>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,72 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <ng-container *ngIf="currentUser$ | async as user">
+    <!-- User Profile Section -->
+    <div class="sidebar-header">
+      <div class="user-profile">
+        <div class="user-avatar">
+          <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="user-info" *ngIf="!collapsed">
+          <div class="user-name">{{ user.nombre }}</div>
+          <div class="user-role">
+            <ng-container [ngSwitch]="user.tipo">
+              <span *ngSwitchCase="TipoUsuario.CONTRIBUYENTE"
+                >Contribuyente</span
+              >
+              <span *ngSwitchCase="TipoUsuario.CONTADOR">Contador</span>
+              <span *ngSwitchCase="TipoUsuario.ADMINISTRADOR"
+                >Administrador</span
+              >
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item" *ngFor="let item of getMenuItems(user)">
+          <a
+            [routerLink]="item.route"
+            class="nav-link"
+            routerLinkActive="active"
+            [attr.title]="collapsed ? item.label : null"
+          >
+            <i [class]="item.icon" class="nav-icon"></i>
+            <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+            <span class="nav-badge" *ngIf="item.badge && !collapsed">{{
+              item.badge
+            }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <!-- Collapse/Expand Toggle -->
+      <button
+        class="btn-toggle"
+        (click)="collapsed = !collapsed"
+        [attr.title]="collapsed ? 'Expandir menú' : 'Contraer menú'"
+      >
+        <i
+          class="fas"
+          [class.fa-chevron-right]="collapsed"
+          [class.fa-chevron-left]="!collapsed"
+        ></i>
+      </button>
+
+      <!-- Logout Button -->
+      <button
+        class="btn-logout"
+        (click)="logout()"
+        [attr.title]="collapsed ? 'Cerrar Sesión' : null"
+      >
+        <i class="fas fa-sign-out-alt"></i>
+        <span *ngIf="!collapsed">Cerrar Sesión</span>
+      </button>
+    </div>
+  </ng-container>
+</aside>
