@@ -69,7 +69,7 @@ export class RegisterComponent {
         numeroLicencia: formValue.tipo === TipoUsuario.CONTADOR ? formValue.numeroLicencia : undefined
       };
 
-      this.usuarioService.crearUsuario(userData).subscribe({
+      this.authService.register(userData).subscribe({
         next: (usuario) => {
           this.notificationService.success(
             'Registro Exitoso',

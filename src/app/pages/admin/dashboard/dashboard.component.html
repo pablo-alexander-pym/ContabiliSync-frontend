@@ -167,8 +167,8 @@
                       <small class="text-muted">{{ usuario.telefono }}</small>
                     </p>
                     <small class="text-muted">
-                      <i class="fas fa-calendar me-1"></i>
-                      {{ formatearFecha(usuario.fechaCreacion!) }}
+                      <i class="fas fa-user me-1"></i>
+                      ID: {{ usuario.id }}
                     </small>
                   </div>
                   <div class="text-end">
@@ -177,22 +177,11 @@
                     </span>
                     <div class="mt-2" *ngIf="usuario.tipo !== 'administrador'">
                       <button
-                        class="btn btn-sm me-1"
-                        [class.btn-outline-success]="!usuario.activo"
-                        [class.btn-outline-danger]="usuario.activo"
-                        (click)="
-                          usuario.activo
-                            ? desactivarUsuario(usuario.id)
-                            : activarUsuario(usuario.id)
-                        "
+                        class="btn btn-sm btn-outline-secondary me-1"
+                        (click)="activarUsuario(usuario.id)"
+                        title="Gestionar usuario"
                       >
-                        <i
-                          [class]="
-                            usuario.activo
-                              ? 'fas fa-user-times'
-                              : 'fas fa-user-check'
-                          "
-                        ></i>
+                        <i class="fas fa-user-cog"></i>
                       </button>
                     </div>
                   </div>

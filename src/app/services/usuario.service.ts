@@ -1,179 +1,98 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import {
   Usuario,
   CrearUsuario,
   ActualizarUsuario,
-  TipoUsuario,
-  ApiResponse,
-  PaginatedResponse,
-  PaginationFilters
+  TipoUsuario
 } from '../models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
   private readonly http = inject(HttpClient);
-  private readonly API_URL = 'https://localhost:7164/api/usuarios'; // Cambiar por tu URL del backend
+  private readonly API_URL = `${environment.apiUrl}/usuarios`; // URL de tu backend
 
   /**
-   * Obtener todos los usuarios
+   * Obtener todos los usuarios - GET /api/usuarios
    */
-  getUsuarios(filters?: PaginationFilters): Observable<Usuario[]> {
-    let params = new HttpParams();
-
-    if (filters) {
-      if (filters.page) params = params.set('page', filters.page.toString());
-      if (filters.limit) params = params.set('limit', filters.limit.toString());
-      if (filters.search) params = params.set('search', filters.search);
-      if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
-      if (filters.sortOrder) params = params.set('sortOrder', filters.sortOrder);
-    }
-
-    return this.http.get<ApiResponse<Usuario[]>>(this.API_URL, { params })
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(this.API_URL)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Obtener usuarios paginados
-   */
-  getUsuariosPaginados(filters: PaginationFilters): Observable<PaginatedResponse<Usuario>> {
-    let params = new HttpParams();
-
-    if (filters.page) params = params.set('page', filters.page.toString());
-    if (filters.limit) params = params.set('limit', filters.limit.toString());
-    if (filters.search) params = params.set('search', filters.search);
-    if (filters.sortBy) params = params.set('sortBy', filters.sortBy);
-    if (filters.sortOrder) params = params.set('sortOrder', filters.sortOrder);
-
-    return this.http.get<ApiResponse<PaginatedResponse<Usuario>>>(`${this.API_URL}/paginated`, { params })
-      .pipe(
-        map(response => response.data),
-        catchError(this.handleError)
-      );
-  }
-
-  /**
-   * Obtener usuario por ID
+   * Obtener usuario por ID - GET /api/usuarios/{id}
    */
   getUsuario(id: number): Observable<Usuario> {
-    return this.http.get<ApiResponse<Usuario>>(`${this.API_URL}/${id}`)
+    return this.http.get<Usuario>(`${this.API_URL}/${id}`)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Obtener contadores disponibles
+   * Obtener contadores disponibles - GET /api/usuarios/contadores
    */
   getContadores(): Observable<Usuario[]> {
-    return this.http.get<ApiResponse<Usuario[]>>(`${this.API_URL}/contadores`)
+    return this.http.get<Usuario[]>(`${this.API_URL}/contadores`)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Obtener usuarios por tipo
+   * Obtener usuarios por tipo - GET /api/usuarios/portipo/{tipo}
    */
   getUsuariosPorTipo(tipo: TipoUsuario): Observable<Usuario[]> {
-    return this.http.get<ApiResponse<Usuario[]>>(`${this.API_URL}/portipo/${tipo}`)
+    return this.http.get<Usuario[]>(`${this.API_URL}/portipo/${tipo}`)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Crear nuevo usuario
+   * Crear nuevo usuario - POST /api/usuarios
    */
   crearUsuario(usuario: CrearUsuario): Observable<Usuario> {
-    return this.http.post<ApiResponse<Usuario>>(this.API_URL, usuario)
+    return this.http.post<Usuario>(this.API_URL, usuario)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Actualizar usuario
+   * Actualizar usuario - PUT /api/usuarios/{id}
    */
   actualizarUsuario(id: number, usuario: ActualizarUsuario): Observable<Usuario> {
-    return this.http.put<ApiResponse<Usuario>>(`${this.API_URL}/${id}`, usuario)
+    return this.http.put<Usuario>(`${this.API_URL}/${id}`, usuario)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Eliminar usuario
+   * Eliminar usuario - DELETE /api/usuarios/{id}
    */
   eliminarUsuario(id: number): Observable<any> {
-    return this.http.delete<ApiResponse<any>>(`${this.API_URL}/${id}`)
+    return this.http.delete(`${this.API_URL}/${id}`)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
 
   /**
-   * Activar/Desactivar usuario
+   * Buscar usuarios por email (útil para validaciones)
    */
-  toggleUsuarioEstado(id: number): Observable<Usuario> {
-    return this.http.patch<ApiResponse<Usuario>>(`${this.API_URL}/${id}/toggle-estado`, {})
-      .pipe(
-        map(response => response.data),
-        catchError(this.handleError)
-      );
-  }
-
-  /**
-   * Buscar usuarios
-   */
-  buscarUsuarios(termino: string, tipo?: TipoUsuario): Observable<Usuario[]> {
-    let params = new HttpParams().set('search', termino);
-    if (tipo) {
-      params = params.set('tipo', tipo);
-    }
-
-    return this.http.get<ApiResponse<Usuario[]>>(`${this.API_URL}/buscar`, { params })
-      .pipe(
-        map(response => response.data),
-        catchError(this.handleError)
-      );
-  }
-
-  /**
-   * Obtener estadísticas de usuarios
-   */
-  getEstadisticasUsuarios(): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.API_URL}/estadisticas`)
-      .pipe(
-        map(response => response.data),
-        catchError(this.handleError)
-      );
-  }
-
-  /**
-   * Validar disponibilidad de email
-   */
-  validarEmail(email: string, excludeId?: number): Observable<boolean> {
+  buscarPorEmail(email: string): Observable<Usuario[]> {
     let params = new HttpParams().set('email', email);
-    if (excludeId) {
-      params = params.set('excludeId', excludeId.toString());
-    }
-
-    return this.http.get<ApiResponse<boolean>>(`${this.API_URL}/validar-email`, { params })
+    return this.http.get<Usuario[]>(`${this.API_URL}`, { params })
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
@@ -190,6 +109,24 @@ export class UsuarioService {
       errorMessage = error.error.message;
     } else if (error.message) {
       errorMessage = error.message;
+    } else if (error.status) {
+      switch (error.status) {
+        case 400:
+          errorMessage = 'Datos inválidos';
+          break;
+        case 401:
+          errorMessage = 'No autorizado';
+          break;
+        case 404:
+          errorMessage = 'Usuario no encontrado';
+          break;
+        case 409:
+          errorMessage = 'El email ya está registrado';
+          break;
+        case 500:
+          errorMessage = 'Error interno del servidor';
+          break;
+      }
     }
 
     return throwError(() => new Error(errorMessage));

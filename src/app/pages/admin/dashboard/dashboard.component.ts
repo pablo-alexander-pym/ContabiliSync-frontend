@@ -71,9 +71,9 @@ export class AdminDashboardComponent implements OnInit {
     const citas = data.citas || [];
     const documentos = data.documentos || [];
 
-    // Procesar usuarios
+    // Procesar usuarios - sin fechaCreacion, usar orden por ID
     this.usuariosRecientes = usuarios
-      .sort((a: Usuario, b: Usuario) => new Date(b.fechaCreacion!).getTime() - new Date(a.fechaCreacion!).getTime())
+      .sort((a: Usuario, b: Usuario) => b.id - a.id)
       .slice(0, 5);
 
     // Procesar citas
@@ -94,7 +94,7 @@ export class AdminDashboardComponent implements OnInit {
       totalCitas: citas.length,
       citasHoy: citas.filter((c: Cita) => this.esFechaHoy(c.fecha)).length,
       documentosSubidos: documentos.length,
-      usuariosActivos: usuarios.filter((u: Usuario) => this.esUsuarioActivo(u)).length
+      usuariosActivos: usuarios.length // Todos los usuarios se consideran activos
     };
 
     // Crear estadísticas del dashboard
@@ -142,39 +142,19 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   private esUsuarioActivo(usuario: Usuario): boolean {
-    // Consideramos activo si se registró en los últimos 30 días
-    const hace30Dias = new Date();
-    hace30Dias.setDate(hace30Dias.getDate() - 30);
-    return new Date(usuario.fechaCreacion!) > hace30Dias;
+    // Como no tenemos fechaCreacion, consideramos que todos los usuarios están activos
+    return true;
   }
 
-  // Métodos para gestión de usuarios
+  // Métodos para gestión de usuarios - simplificados sin el campo activo
   activarUsuario(usuarioId: number): void {
-    const updateData: any = { activo: true };
-    this.usuarioService.actualizarUsuario(usuarioId, updateData).subscribe({
-      next: () => {
-        this.notificationService.success('Éxito', 'Usuario activado correctamente');
-        this.loadDashboardData(); // Recargar datos
-      },
-      error: (error: any) => {
-        this.notificationService.error('Error', 'No se pudo activar el usuario');
-        console.error('Error activating user:', error);
-      }
-    });
+    // Como no tenemos campo activo en el modelo, solo mostramos mensaje
+    this.notificationService.info('Info', 'Función de activación no disponible en esta versión');
   }
 
   desactivarUsuario(usuarioId: number): void {
-    const updateData: any = { activo: false };
-    this.usuarioService.actualizarUsuario(usuarioId, updateData).subscribe({
-      next: () => {
-        this.notificationService.success('Éxito', 'Usuario desactivado correctamente');
-        this.loadDashboardData(); // Recargar datos
-      },
-      error: (error: any) => {
-        this.notificationService.error('Error', 'No se pudo desactivar el usuario');
-        console.error('Error deactivating user:', error);
-      }
-    });
+    // Como no tenemos campo activo en el modelo, solo mostramos mensaje
+    this.notificationService.info('Info', 'Función de desactivación no disponible en esta versión');
   }
 
   // Helpers para el template

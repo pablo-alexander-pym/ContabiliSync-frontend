@@ -1,19 +1,17 @@
 import { TipoUsuario } from './enums';
 
 /**
- * Interface para Usuario
+ * Interface para Usuario - coincide con el backend
  */
 export interface Usuario {
   id: number;
   nombre: string;
   email: string;
-  password?: string; // Solo para registro/actualización
+  password?: string; // Solo para registro/actualización, no se retorna normalmente
   tipo: TipoUsuario;
   telefono?: string;
   especialidad?: string; // Solo para contadores
   numeroLicencia?: string; // Solo para contadores
-  fechaCreacion?: Date;
-  activo?: boolean;
 }
 
 /**
@@ -39,7 +37,6 @@ export interface ActualizarUsuario {
   telefono?: string;
   especialidad?: string;
   numeroLicencia?: string;
-  activo?: boolean;
 }
 
 /**
@@ -56,12 +53,5 @@ export interface LoginRequest {
 export interface AuthResponse {
   token: string;
   usuario: Usuario;
-  expiresIn: number;
-}
-
-/**
- * Interface para el perfil del usuario actual
- */
-export interface PerfilUsuario extends Usuario {
-  // Propiedades adicionales específicas del perfil si son necesarias
+  expiresIn?: number;
 }

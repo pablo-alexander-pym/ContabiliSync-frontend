@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { Usuario, LoginRequest, AuthResponse, TipoUsuario, ApiResponse } from '../models';
+import { Usuario, LoginRequest, AuthResponse, TipoUsuario, CrearUsuario } from '../models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly API_URL = 'https://localhost:7164/api'; // Cambiar por tu URL del backend
+  private readonly API_URL = environment.apiUrl; // URL de tu backend
   private readonly TOKEN_KEY = 'contabilisync_token';
   private readonly USER_KEY = 'contabilisync_user';
 
@@ -29,9 +30,8 @@ export class AuthService {
    * Iniciar sesión
    */
   login(credentials: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.API_URL}/auth/login`, credentials)
+    return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, credentials)
       .pipe(
-        map(response => response.data),
         tap(authResponse => {
           this.setAuthData(authResponse);
         }),
@@ -40,12 +40,11 @@ export class AuthService {
   }
 
   /**
-   * Registrar nuevo usuario
+   * Registrar nuevo usuario (usa el endpoint de usuarios)
    */
-  register(userData: any): Observable<Usuario> {
-    return this.http.post<ApiResponse<Usuario>>(`${this.API_URL}/usuarios`, userData)
+  register(userData: CrearUsuario): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.API_URL}/usuarios`, userData)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
@@ -107,9 +106,8 @@ export class AuthService {
       return throwError(() => new Error('Usuario no autenticado'));
     }
 
-    return this.http.put<ApiResponse<Usuario>>(`${this.API_URL}/usuarios/${currentUser.id}`, userData)
+    return this.http.put<Usuario>(`${this.API_URL}/usuarios/${currentUser.id}`, userData)
       .pipe(
-        map(response => response.data),
         tap(updatedUser => {
           localStorage.setItem(this.USER_KEY, JSON.stringify(updatedUser));
           this.currentUserSubject.next(updatedUser);
@@ -132,9 +130,8 @@ export class AuthService {
       newPassword
     };
 
-    return this.http.put<ApiResponse<any>>(`${this.API_URL}/usuarios/${currentUser.id}/password`, passwordData)
+    return this.http.put(`${this.API_URL}/usuarios/${currentUser.id}/password`, passwordData)
       .pipe(
-        map(response => response.data),
         catchError(this.handleError)
       );
   }
@@ -187,6 +184,27 @@ export class AuthService {
       errorMessage = error.error.message;
     } else if (error.message) {
       errorMessage = error.message;
+    } else if (error.status) {
+      switch (error.status) {
+        case 400:
+          errorMessage = 'Datos inválidos';
+          break;
+        case 401:
+          errorMessage = 'Credenciales incorrectas';
+          break;
+        case 403:
+          errorMessage = 'Acceso denegado';
+          break;
+        case 404:
+          errorMessage = 'Recurso no encontrado';
+          break;
+        case 409:
+          errorMessage = 'El email ya está registrado';
+          break;
+        case 500:
+          errorMessage = 'Error interno del servidor';
+          break;
+      }
     }
 
     return throwError(() => new Error(errorMessage));
